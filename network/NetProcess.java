@@ -61,30 +61,52 @@ public class NetProcess extends UserProcess {
         */
         int localID = Machine.networkLink().getLinkAddress();
 
-        int srcPort = 54; //we want a random port num between 0 and 127
+        int srcPort = findAvailablePort();
         
     //srcLink,srcPort, dstLink,dstPort
        
        Connection connection = new Connection(localID, srcPort, host, port);
         
-        for(int i = 0; i < fileTable.length; i ++)
-        {
-            if (fileTable[i] == null) {
-                fileTable[i] = connection;
-                break;
-            }
+for(int i = 0; i < fileTable.length; i ++)
+{
+    if (fileTable[i] == null) {
+fileTable[i] = connection;
+break;
+}
 
-        }
-        //int dstLink, int dstPort, int srcLink, int srcPort,
-        int status, int seqNum, byte[] contents
+}
+//int dstLink, int dstPort, int srcLink, int srcPort,
+               int status, int seqNum, byte[] contents
 
-        MailMessage message = new MailMessage(host, port, localID, srcPort, 1, connection.curSeqNum, new byte[0])
+NetMessage message = new NetMessage(host, port, localID, srcPort, 1, connection.curSeqNum, new byte[0])
 
 
-        return i;
+return i;
     }
 
     private int handleAccept(int port){
+NetMessage message = NetKernel.postOffice.receive(port);
+    if (message == null) {
+        return -1;
+}
+int dstLink= message.packet.dstLink;
+int srcLink  = message.packet.srcLink;
+int dstPort = message.dstPort;
+int srcPort = message.srcPort;
+Connection connection = new Connection(srcLink, srcPort, dstLink, dstPort);
+for(int i = 0; i < fileTable.length; i ++)
+{
+        if (fileTable[i] == null) {
+fileTable[i] = connection;
+break;
+}
+
+NetMessage acknowledgement = new NetMessage(dstLink, dstPort, srcLink, srcPort,  3, connection.seqNum, new byte[0]);
+NetKernel.postOffice.send(acknowledgement);
+
+}
+    
 
     }
 }
+

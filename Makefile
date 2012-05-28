@@ -22,11 +22,11 @@ threads =	ThreadedKernel KThread Alarm \
 		Condition2 Semaphore2 Communicator Rider ElevatorController \
 		PriorityScheduler LotteryScheduler Boat Restroom ReadersWriters ReadersWriters1
 
-userprog =	UserKernel UThread UserProcess SynchConsole
+userprog =	UserKernel UThread UserProcess SynchConsole Connection
 
 vm =		VMKernel VMProcess
 
-network = 	NetKernel NetProcess PostOffice MailMessage
+network = 	NetKernel NetProcess PostOffice MailMessage NetMessage
 
 ALLDIRS = machine security ag threads userprog vm network
 
