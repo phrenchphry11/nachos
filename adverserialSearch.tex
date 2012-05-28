@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{homework}
+\begin{document}
+
+\homework{1}{Take-Home}{Holly French}{Foo}
+
+
+\begin{enumerate}
+\item[5.7] Consider the minimax algorithm, where the utility values of any game tree are propogated up recursively.  As it works optimally, min will always pick the minimum of the values that max has selected, and conversely, max will always select the maximum values that min has picked (which are the minimum values of max).  Now, consider a minimax algorithm where min is playing suboptimally, but max is playing optimally.  This means that max will always pick the largest value from the tree layer below it.  However, since min is not an optimal player, it will not necessarily pick the least value from the tree layer below it.  This means that max is never going to get lower than it could have against an optimal player.  The values that min selects are going to be seen by max which is in the above layer.  Max is only going to have higher values from which to pick, so max is guaranteed to never get worse.  
+
+There is, however, a case where max will still do better, even if both min and max are playing suboptimally.  Max can somehow set up a trap for min that will cause min to lose, no matter what: \\
+-1\\
+5 -1  \\
+-100 1 -1 -1 \\
+Max may have moved to the right side of the tree, but min also made a mistake!
+\item[5.9]
+\begin{enumerate}
+\item[a)] If tic-tac-toe is played until the board is filled up and X always plays first, then there are 9! possible games.  X has 9 possible squares to select, then O has 8, then X has 7, ....  
+\item[b - d)] See attached
+\end{enumerate}
+\item[5.19] Consider the tree with randomized chance nodes.  The sections of chance nodes have a branching factor of 6 (since a die has 6 sides, traditionally), and it has a depth of 8.  To calculate the size of the tree, then, we have $6^8 = 1679616$.  Now, if we have a deterministic tree, the tree is much smaller.  If we generate 50 rolls that we know the outcome of, it's just $50 \times 8$ dice rolls which is 400.  So this procedure works very well, if we actually know the outcomes of dice rolls!  400 is many orders of magnitude less than $6^8$.  Additionally, we are guaranteed the ability to alpha-beta prune a deterministic tree if it is ordered in a good way.  Does this ever happen that we have deterministic dice rolls though?  NO.
+\item[5.20] \begin{enumerate}
+\item[a)] No - the next branch that we explore can always have a higher value than what has been already seen.
+\item[b)] No - for the same reason.  The expectation node must be computed, but like before, the expectation values can always get higher.
+\item[c)] No - even though we've added a lower bound, it doesn't address the fact that we can still get values that are always getting higher.  
+\item[d)] No - we have a lower bound, but we still have the same problems as before in (b).  
+\item[e)] We can have a max tree.  Consider a tree with a branching factor of 2, and base nodes of all 1.  As soon as we see any 1, we can prune the rest of the nodes, since we've already found a maximal solution.
+\item[f)] Yes - for similar reasons as stated above.  Again, if you have a tree with all base nodes as 1, and a branching factor of two.  If every node has an equal (1/2) chance of getting selected, as soon as we see one tree with expectation of 1, then we can prune everything else.  
+\item[g)] Highest probability first (assuming bounded values).  The higher probability gives more weight to the expectation value assigned to the chance nodes.  Thus, this can help us decide if it is possible to even obtain a chance node with value higher than one we have already found.
+\end{enumerate}
+
+\end{enumerate}
+
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
