@@ -59,9 +59,9 @@ public class PostOffice {
 	Lib.debug(dbgNet, "waiting for mail on port " + port);
 
 	NetMessage mail = (NetMessage) queues[port].synchList.removeFirst();
-	if (queues[port].synchList.list.size() == 0) {
-		queues[port].isFree = true;
-	}
+	//if (queues[port].synchList.list.size() == 0) {
+	//	queues[port].isFree = true;
+	//}
 
 	if (Lib.test(dbgNet))
 	    System.out.println("got mail on port " + port + ": " + mail);
@@ -138,7 +138,8 @@ for (SpecialSynchList listObj : queues) {
 		return i;
 	}
 	i++;
-}
+	}
+	return i;
 }
 
 
