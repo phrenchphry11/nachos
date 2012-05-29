@@ -16,6 +16,7 @@ public class NetProcess extends UserProcess {
     super();
     }
 
+    PostOffice postOffice = new PostOffice();
     private static final int
     syscallConnect = 11,
     syscallAccept = 12;
@@ -61,13 +62,13 @@ public class NetProcess extends UserProcess {
         */
         int localID = Machine.networkLink().getLinkAddress();
 
-        int srcPort = findAvailablePort();
+        int srcPort = postOffice.findAvailablePort();
         
     //srcLink,srcPort, dstLink,dstPort
        
        Connection connection = new Connection(localID, srcPort, host, port);
-        
-for(int i = 0; i < fileTable.length; i ++)
+int i;
+for(i = 0; i < fileTable.length; i ++)
 {
     if (fileTable[i] == null) {
 fileTable[i] = connection;
@@ -76,16 +77,16 @@ break;
 
 }
 //int dstLink, int dstPort, int srcLink, int srcPort,
-               int status, int seqNum, byte[] contents
+//               int status, int seqNum, byte[] contents
 
-NetMessage message = new NetMessage(host, port, localID, srcPort, 1, connection.curSeqNum, new byte[0])
+NetMessage message = new NetMessage(host, port, localID, srcPort, 1, connection.curSeqNum, new byte[0]);
 
 
 return i;
     }
 
     private int handleAccept(int port){
-NetMessage message = NetKernel.postOffice.receive(port);
+NetMessage message = postOffice.receive(port);
     if (message == null) {
         return -1;
 }
@@ -101,8 +102,8 @@ fileTable[i] = connection;
 break;
 }
 
-NetMessage acknowledgement = new NetMessage(dstLink, dstPort, srcLink, srcPort,  3, connection.seqNum, new byte[0]);
-NetKernel.postOffice.send(acknowledgement);
+NetMessage acknowledgement = new NetMessage(dstLink, dstPort, srcLink, srcPort,  3, connection.curSeqNum, new byte[0]);
+postOffice.send(acknowledgement);
 
 }
     

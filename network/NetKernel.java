@@ -61,10 +61,10 @@ public class NetKernel extends UserKernel {
 
 	long startTime = Machine.timer().getTime();
 	
-	MailMessage ping;
+	NetMessage ping;
 
 	try {
-	    ping = new MailMessage(dstLink, 1,
+	    ping = new NetMessage(dstLink, 1,
 				   Machine.networkLink().getLinkAddress(), 0,
 				   3, 127986, "hello world".getBytes());
 	}
@@ -74,7 +74,7 @@ public class NetKernel extends UserKernel {
 	}
 
 	postOffice.send(ping);
-	MailMessage ack = postOffice.receive(0);
+	NetMessage ack = postOffice.receive(0);
 	System.out.println(Lib.bytesToString(ack.contents, 0, ack.contents.length));
 	
 	long endTime = Machine.timer().getTime();
@@ -84,12 +84,12 @@ public class NetKernel extends UserKernel {
 
     private void pingServer() {
 	while (true) {
-	    MailMessage ping = postOffice.receive(1);
+	    NetMessage ping = postOffice.receive(1);
 
-	    MailMessage ack;
+	    NetMessage ack;
 	    System.out.println(ping.status);
 	    try {
-		ack = new MailMessage(ping.packet.srcLink, ping.srcPort,
+		ack = new NetMessage(ping.packet.srcLink, ping.srcPort,
 				      ping.packet.dstLink, ping.dstPort,
 				      ping.status, ping.seqNum,
 				      ping.contents);

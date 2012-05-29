@@ -9,7 +9,7 @@ import java.util.Arrays;
  *
  * @see	nachos.machine.Packet
  */
-public class NetMessage extends MailMessage{
+public class NetMessage extends Packet{
     /**
      * Allocate a new mail message to be sent, using the specified parameters.
      *
@@ -19,7 +19,7 @@ public class NetMessage extends MailMessage{
      * @param	srcPort		the source port.
      * @param	contents	the contents of the packet.
      */
-    public MailMessage(int dstLink, int dstPort, int srcLink, int srcPort,
+    public NetMessage(int dstLink, int dstPort, int srcLink, int srcPort,
 		       int status, int seqNum, byte[] contents) throws MalformedPacketException {
 	// make sure the paramters are valid
 	if (dstPort < 0 || dstPort >= portLimit ||
@@ -55,7 +55,7 @@ public class NetMessage extends MailMessage{
      *
      * @param	packet	the packet containg the mail message.
      */
-    public MailMessage(Packet packet) throws MalformedPacketException {
+    public NetMessage(Packet packet) throws MalformedPacketException {
 	this.packet = packet;
 
 	// make sure we have a valid header

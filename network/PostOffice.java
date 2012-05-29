@@ -26,9 +26,9 @@ public class PostOffice {
 	messageSent = new Semaphore(0);
 	sendLock = new Lock();
 
-	queues = new SynchList[MailMessage.portLimit];
+	queues = new SpecialSynchList[NetMessage.portLimit];
 	for (int i=0; i<queues.length; i++)
-	    queues[i] = new SynchList();
+	    queues[i] = new SpecialSynchList();
 
 	Runnable receiveHandler = new Runnable() {
 	    public void run() { receiveInterrupt(); }
@@ -53,12 +53,15 @@ public class PostOffice {
      *
      * @return	the message received.
      */
-    public MailMessage receive(int port) {
+    public NetMessage receive(int port) {
 	Lib.assertTrue(port >= 0 && port < queues.length);
 
 	Lib.debug(dbgNet, "waiting for mail on port " + port);
 
-	MailMessage mail = (MailMessage) queues[port].removeFirst();
+	NetMessage mail = (NetMessage) queues[port].synchList.removeFirst();
+	if (queues[port].synchList.list.length == 0) {
+		queues[port].isFree = true;
+	}
 
 	if (Lib.test(dbgNet))
 	    System.out.println("got mail on port " + port + ": " + mail);
@@ -75,10 +78,10 @@ public class PostOffice {
 
 	    Packet p = Machine.networkLink().receive();
 
-	    MailMessage mail;
+	    NetMessage mail;
 
 	    try {
-		mail = new MailMessage(p);
+		mail = new NetMessage(p);
 	    }
 	    catch (MalformedPacketException e) {
 		continue;
@@ -89,7 +92,9 @@ public class PostOffice {
 				   + ": " + mail);
 
 	    // atomically add message to the mailbox and wake a waiting thread
-	    queues[mail.dstPort].add(mail);
+	    queues[mail.dstPort].synchList.add(mail);
+	    queues[mail.dstPort].isFree = false;
+
 	}
     }
 
@@ -104,7 +109,7 @@ public class PostOffice {
     /**
      * Send a message to a mailbox on a remote machine.
      */
-    public void send(MailMessage mail) {
+    public void send(NetMessage mail) {
 	if (Lib.test(dbgNet))
 	    System.out.println("sending mail: " + mail);
 
@@ -125,16 +130,34 @@ public class PostOffice {
 	messageSent.V();
     }
 
-private void findAvailablePort() {
 
+public int findAvailablePort() {
+int i = 0;
+for (SpecialSynchList listObj : queues) {
+	if (listObj.isFree == true) {
+		return i;
+	}
+	i++;
+}
 }
 
 
-
-    private SynchList[] queues;
+    private SpecialSynchList[] queues;
     private Semaphore messageReceived;	// V'd when a message can be dequeued
     private Semaphore messageSent;	// V'd when a message can be queued
     private Lock sendLock;
 
     private static final char dbgNet = 'n';
+   private class SpecialSynchList {
+
+   		SynchList synchList;
+   		boolean isFree;
+   		private SpecialSynchList(){
+			synchList = new SynchList();
+			isFree = true;
+		}
+    }
+
+
+   
 }

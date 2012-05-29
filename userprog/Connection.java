@@ -13,7 +13,7 @@ public class Connection extends OpenFile{
 	public int curSeqNum;
 	
 	public Connection(int srcLink, int scrPort, int dstLink, int dstPort){
-		super.(null, "Connection");
+		super(null, "Connection");
 		this.srcLink = srcLink;
 		this.srcPort = srcPort;
 		this.dstLink = dstLink;
