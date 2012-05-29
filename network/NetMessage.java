@@ -9,7 +9,7 @@ import java.util.Arrays;
  *
  * @see	nachos.machine.Packet
  */
-public class NetMessage extends Packet{
+public class NetMessage{
     /**
      * Allocate a new mail message to be sent, using the specified parameters.
      *

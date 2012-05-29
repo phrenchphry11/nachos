@@ -59,7 +59,7 @@ public class PostOffice {
 	Lib.debug(dbgNet, "waiting for mail on port " + port);
 
 	NetMessage mail = (NetMessage) queues[port].synchList.removeFirst();
-	if (queues[port].synchList.list.length == 0) {
+	if (queues[port].synchList.list.size() == 0) {
 		queues[port].isFree = true;
 	}
 
@@ -148,11 +148,11 @@ for (SpecialSynchList listObj : queues) {
     private Lock sendLock;
 
     private static final char dbgNet = 'n';
-   private class SpecialSynchList {
+   public class SpecialSynchList {
 
    		SynchList synchList;
    		boolean isFree;
-   		private SpecialSynchList(){
+   		public SpecialSynchList(){
 			synchList = new SynchList();
 			isFree = true;
 		}
