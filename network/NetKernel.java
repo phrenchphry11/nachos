@@ -117,7 +117,7 @@ public class NetKernel extends UserKernel {
 	super.terminate();
     }
 
-    private PostOffice postOffice;
+    public static PostOffice postOffice;
 
     // dummy variables to make javac smarter
     private static NetProcess dummy1 = null;
