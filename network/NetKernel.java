@@ -117,6 +117,7 @@ public class NetKernel extends UserKernel {
 	super.terminate();
     }
 
+    //modified postOffice so it can be accessed elsewhere
     public static PostOffice postOffice;
 
     // dummy variables to make javac smarter

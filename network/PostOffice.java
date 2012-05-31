@@ -103,22 +103,22 @@ public class PostOffice {
      * link.
      */
     private void receiveInterrupt() {
-	messageReceived.V();
+		messageReceived.V();
     }
 
     /**
      * Send a message to a mailbox on a remote machine.
      */
     public void send(NetMessage mail) {
-	if (Lib.test(dbgNet))
-	    System.out.println("sending mail: " + mail);
+		if (Lib.test(dbgNet))
+	    	System.out.println("sending mail: " + mail);
 
-	sendLock.acquire();
+			sendLock.acquire();
 
-	Machine.networkLink().send(mail.packet);
-	messageSent.P();
+			Machine.networkLink().send(mail.packet);
+			messageSent.P();
 
-	sendLock.release();
+			sendLock.release();
     }
 
     /**
@@ -131,16 +131,17 @@ public class PostOffice {
     }
 
 
-public int findAvailablePort() {
-int i = 0;
-for (SpecialSynchList listObj : queues) {
-	if (listObj.isFree == true) {
+	public int findAvailablePort() {
+		//go through the the array of synch lists to find a vacant port
+		int i = 0;
+		for (SpecialSynchList listObj : queues) {
+			if (listObj.isFree == true) {
+				return i;
+			}
+			i++;
+		}
 		return i;
 	}
-	i++;
-	}
-	return i;
-}
 
 
     private SpecialSynchList[] queues;
@@ -149,8 +150,8 @@ for (SpecialSynchList listObj : queues) {
     private Lock sendLock;
 
     private static final char dbgNet = 'n';
-   public class SpecialSynchList {
-
+   	public class SpecialSynchList {
+   		//special class to determine whether or not a port is free. by default, it is
    		SynchList synchList;
    		boolean isFree;
    		public SpecialSynchList(){

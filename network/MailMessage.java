@@ -21,33 +21,33 @@ public class MailMessage {
      */
     public MailMessage(int dstLink, int dstPort, int srcLink, int srcPort,
 		       int status, int seqNum, byte[] contents) throws MalformedPacketException {
-	// make sure the paramters are valid
-	if (dstPort < 0 || dstPort >= portLimit ||
-	    srcPort < 0 || srcPort >= portLimit ||
-	    status < 0 || status >= maxStatus ||
-	    seqNum < 0 || seqNum >= maxSeqNum ||
-	    contents.length > maxContentsLength)
+    	// make sure the paramters are valid
+    	if (dstPort < 0 || dstPort >= portLimit ||
+    	    srcPort < 0 || srcPort >= portLimit ||
+    	    status < 0 || status >= maxStatus ||
+    	    seqNum < 0 || seqNum >= maxSeqNum ||
+    	    contents.length > maxContentsLength)
 	    throw new MalformedPacketException();
 	
-	this.dstPort = (byte) dstPort;
-	this.srcPort = (byte) srcPort;
-	this.status = (byte) status;
-	System.out.println("init " + this.status);
-	this.seqNum = seqNum;
-	this.contents = contents;
+    	this.dstPort = (byte) dstPort;
+    	this.srcPort = (byte) srcPort;
+    	this.status = (byte) status;
+    	System.out.println("init " + this.status);
+    	this.seqNum = seqNum;
+    	this.contents = contents;
 
-	byte[] packetContents = new byte[headerLength + contents.length];
+    	byte[] packetContents = new byte[headerLength + contents.length];
 
-	packetContents[0] = (byte) dstPort;
-	packetContents[1] = (byte) srcPort;
-	packetContents[3] = (byte) status;
-	byte[] seqNumAsByte = Lib.bytesFromInt(seqNum);
-	System.arraycopy(seqNumAsByte, 0, packetContents, 4, seqNumAsByte.length);
+    	packetContents[0] = (byte) dstPort;
+    	packetContents[1] = (byte) srcPort;
+    	packetContents[3] = (byte) status;
+    	byte[] seqNumAsByte = Lib.bytesFromInt(seqNum);
+    	System.arraycopy(seqNumAsByte, 0, packetContents, 4, seqNumAsByte.length);
 
-	System.arraycopy(contents, 0, packetContents, headerLength,
-			 contents.length);
-	System.out.println(Arrays.toString(packetContents));
-	packet = new Packet(dstLink, srcLink, packetContents);
+    	System.arraycopy(contents, 0, packetContents, headerLength,
+    			 contents.length);
+    	System.out.println(Arrays.toString(packetContents));
+    	packet = new Packet(dstLink, srcLink, packetContents);
     }
 	
     /**
@@ -56,25 +56,25 @@ public class MailMessage {
      * @param	packet	the packet containg the mail message.
      */
     public MailMessage(Packet packet) throws MalformedPacketException {
-	this.packet = packet;
+	   this.packet = packet;
 
-	// make sure we have a valid header
-	if (packet.contents.length < headerLength ||
-	    packet.contents[0] < 0 || packet.contents[0] >= portLimit ||
-	    packet.contents[1] < 0 || packet.contents[1] >= portLimit ||
-	    packet.contents[3] < 0 || packet.contents[3] >= maxStatus ||
-	    Lib.bytesToInt(Arrays.copyOfRange(packet.contents, 4, 8), 0) < 0 ||
-	    Lib.bytesToInt(Arrays.copyOfRange(packet.contents, 4, 8), 0) >= maxSeqNum)
-	    throw new MalformedPacketException();
+    	// make sure we have a valid header
+    	if (packet.contents.length < headerLength ||
+    	    packet.contents[0] < 0 || packet.contents[0] >= portLimit ||
+    	    packet.contents[1] < 0 || packet.contents[1] >= portLimit ||
+    	    packet.contents[3] < 0 || packet.contents[3] >= maxStatus ||
+    	    Lib.bytesToInt(Arrays.copyOfRange(packet.contents, 4, 8), 0) < 0 ||
+    	    Lib.bytesToInt(Arrays.copyOfRange(packet.contents, 4, 8), 0) >= maxSeqNum)
+    	    throw new MalformedPacketException();
 
-	dstPort = packet.contents[0];
-	srcPort = packet.contents[1];
-	status = packet.contents[3];
-	seqNum = Lib.bytesToInt(Arrays.copyOfRange(packet.contents, 4, 8), 0);
+    	dstPort = packet.contents[0];
+    	srcPort = packet.contents[1];
+    	status = packet.contents[3];
+    	seqNum = Lib.bytesToInt(Arrays.copyOfRange(packet.contents, 4, 8), 0);
 
-	contents = new byte[packet.contents.length - headerLength];
-	System.arraycopy(packet.contents, headerLength, contents, 0,
-			 contents.length);
+    	contents = new byte[packet.contents.length - headerLength];
+    	System.arraycopy(packet.contents, headerLength, contents, 0,
+    			 contents.length);
     }
 
     /**
