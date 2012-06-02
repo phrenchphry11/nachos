@@ -79,7 +79,7 @@ public class NetProcess extends UserProcess {
             return -1;
         }
 
-        NetMessage acknowledgement = NetKernel.postOffice.receiveBlock(srcPort);
+        NetMessage acknowledgement = NetKernel.postOffice.receive(srcPort);
         System.out.println("Acknowledge " + acknowledgement);
 
         return i;

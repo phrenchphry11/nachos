@@ -150,7 +150,7 @@ public class PostOffice {
 		portLock.acquire();
 		if (!queues[i].isFree)
 			System.out.println("port is not free");
-		queues[i].isFree = False;
+		queues[i].isFree = false;
 		portLock.release();
 	}
 
@@ -159,7 +159,7 @@ public class PostOffice {
     private Semaphore messageReceived;	// V'd when a message can be dequeued
     private Semaphore messageSent;	// V'd when a message can be queued
     private Lock sendLock;
-
+    private Lock portLock;
     private static final char dbgNet = 'n';
    	public class SpecialSynchList {
    		//special class to determine whether or not a port is free. by default, it is

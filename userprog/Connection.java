@@ -4,6 +4,10 @@ import nachos.network.*;
 import nachos.machine.*;
 import nachos.threads.*;
 import nachos.userprog.*;
+
+import java.util.Arrays;
+import java.lang.Math;
+
 //connection extends openfile
 public class Connection extends OpenFile{
 
@@ -26,16 +30,15 @@ public class Connection extends OpenFile{
 
 	public int read(byte[] buffer, int offset, int length) {
 		//reads the packet into a buffer
-		int numBytesRead = 0;
 		NetMessage message = NetKernel.postOffice.receive(srcPort);
 		if (message == null) {
 			return 0;
 		}
-		for(int i = 0; i < length; i ++) {
-			buffer[i] = message.contents[i + offset];
-			numBytesRead++;
-		}
 		
+		curSeqNum++;
+		int numBytesRead = Math.min(length, message.contents.length);
+		System.arraycopy(message.contents, 0, buffer, offset, numBytesRead);
+
 		return numBytesRead;
 
 	}
