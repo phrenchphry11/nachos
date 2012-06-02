@@ -63,7 +63,7 @@ public class PostOffice {
 	//if (queues[port].synchList.list.size() == 0) {
 	//	queues[port].isFree = true;
 	//}
-
+	System.out.println("received" + port);
 	if (Lib.test(dbgNet))
 	    System.out.println("got mail on port " + port + ": " + mail);
 
@@ -114,8 +114,9 @@ public class PostOffice {
 		if (Lib.test(dbgNet))
 	    	System.out.println("sending mail: " + mail);
 
+	    System.out.println("acquire lock");
 		sendLock.acquire();
-
+		System.out.println("send");
 		Machine.networkLink().send(mail.packet);
 		messageSent.P();
 
@@ -138,12 +139,13 @@ public class PostOffice {
 		int i = 0;
 		for (SpecialSynchList listObj : queues) {
 			if (listObj.isFree == true) {
+				listObj.isFree == false;
 				return i;
 			}
 			i++;
 		}
 		portLock.release();
-		return i;
+		return -1;
 	}
 
 	public void markPortAsUsed(int i) {

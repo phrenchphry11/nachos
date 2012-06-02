@@ -63,16 +63,18 @@ public class NetProcess extends UserProcess {
         int i;
         for(i = 2; i < fileTable.length; i ++)
         {
+            System.out.println(fileTable[i]);
             if (fileTable[i] == null) {
             fileTable[i] = connection;
             break;
             }
 
         }
-
         try {
-            NetMessage message = new NetMessage(host, port, localID, srcPort, 1, connection.curSeqNum, new byte[0]);
+            System.out.println("trying a thing");
+            NetMessage message = new NetMessage(host, port, localID, srcPort, 1, 0, new byte[0]);
             NetKernel.postOffice.send(message);
+            System.out.println("sent a thing");
         } catch (MalformedPacketException e) {
             System.out.println("Malformed packet exception");
             Lib.assertNotReached();
