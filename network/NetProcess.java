@@ -16,7 +16,7 @@ public class NetProcess extends UserProcess {
         super();
     }
 
-    public PostOffice postOffice = new PostOffice();
+    //public PostOffice postOffice = new PostOffice();
         private static final int syscallConnect = 11, syscallAccept = 12;
     
     /**
@@ -55,15 +55,14 @@ public class NetProcess extends UserProcess {
     * Returns the new file descriptor, or -1 if an error occurred.
     */
     private int handleConnect(int host, int port){
-        int localID = Machine.networkLink().getLinkAddress();
+        int srcLink = Machine.networkLink().getLinkAddress();
 
         int srcPort = NetKernel.postOffice.findAvailablePort();
                
-       Connection connection = new Connection(host, port, localID, srcPort);
+       Connection connection = new Connection(host, port, srcLink, srcPort);
         int i;
         for(i = 2; i < fileTable.length; i ++)
         {
-            System.out.println(fileTable[i]);
             if (fileTable[i] == null) {
             fileTable[i] = connection;
             break;
@@ -71,18 +70,17 @@ public class NetProcess extends UserProcess {
 
         }
         try {
-            System.out.println("trying a thing");
-            NetMessage message = new NetMessage(host, port, localID, srcPort, 1, 0, new byte[0]);
+            NetMessage message = new NetMessage(host, port, srcLink, srcPort, 1, 0, new byte[0]);
             NetKernel.postOffice.send(message);
-            System.out.println("sent a thing");
         } catch (MalformedPacketException e) {
             System.out.println("Malformed packet exception");
             Lib.assertNotReached();
             return -1;
         }
 
-        NetMessage acknowledgement = NetKernel.postOffice.receive(srcPort);
-        System.out.println("Acknowledge " + acknowledgement);
+        //System.out.println("acknowledge");
+        //NetMessage acknowledgement = NetKernel.postOffice.receive(srcPort);
+        //System.out.println("Acknowledge " + acknowledgement);
 
         return i;
     }
@@ -105,11 +103,11 @@ public class NetProcess extends UserProcess {
     if (message == null) {
         return -1;
     }
-    int dstLink= message.packet.dstLink;
-    int srcLink  = message.packet.srcLink;
-    int dstPort = Machine.networkLink().getLinkAddress();
-    int srcPort = message.srcPort;
-    Connection connection = new Connection(srcLink, srcPort, dstLink, port);
+
+    int dstLink  = message.packet.srcLink;
+    int srcLink = Machine.networkLink().getLinkAddress();
+    int dstPort = message.srcPort;
+    Connection connection = new Connection(dstLink, dstPort, srcLink, port);
     NetKernel.postOffice.markPortAsUsed(port);
     int i;
     for(i = 2; i < fileTable.length; i ++)
@@ -121,7 +119,7 @@ public class NetProcess extends UserProcess {
        
     }
     try {
-            NetMessage acknowledgement = new NetMessage(dstLink, dstPort, srcLink, srcPort,  3, connection.curSeqNum, new byte[0]);
+            NetMessage acknowledgement = new NetMessage(dstLink, dstPort, srcLink, port,  3, 0, new byte[0]);
             NetKernel.postOffice.send(acknowledgement);
     } catch(MalformedPacketException e) {
             System.out.println("malformed packed exception");

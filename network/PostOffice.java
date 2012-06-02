@@ -28,9 +28,10 @@ public class PostOffice {
 		portLock = new Lock();
 
 		queues = new SpecialSynchList[NetMessage.portLimit];
+		
 		for (int i=0; i<queues.length; i++)
 	    	queues[i] = new SpecialSynchList();
-
+		
 		Runnable receiveHandler = new Runnable() {
 	    	public void run() { receiveInterrupt(); }
 		};
@@ -63,7 +64,6 @@ public class PostOffice {
 	//if (queues[port].synchList.list.size() == 0) {
 	//	queues[port].isFree = true;
 	//}
-	System.out.println("received" + port);
 	if (Lib.test(dbgNet))
 	    System.out.println("got mail on port " + port + ": " + mail);
 
@@ -118,9 +118,11 @@ public class PostOffice {
 		sendLock.acquire();
 		System.out.println("send");
 		Machine.networkLink().send(mail.packet);
+		System.out.println("line 121");
 		messageSent.P();
-
+		System.out.println("line 123");
 		sendLock.release();
+		System.out.println("release send lock");
     }
 
     /**
@@ -139,7 +141,7 @@ public class PostOffice {
 		int i = 0;
 		for (SpecialSynchList listObj : queues) {
 			if (listObj.isFree == true) {
-				listObj.isFree == false;
+				listObj.isFree = false;
 				return i;
 			}
 			i++;
