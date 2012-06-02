@@ -45,7 +45,6 @@ public class NetMessage{
 
     	System.arraycopy(contents, 0, packetContents, headerLength,
     			 contents.length);
-    	System.out.println(Arrays.toString(packetContents));
     	packet = new Packet(dstLink, srcLink, packetContents);
     }
 	

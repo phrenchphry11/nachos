@@ -22,28 +22,29 @@ public class PostOffice {
      * "postal worker" thread.
      */
     public PostOffice() {
-	messageReceived = new Semaphore(0);
-	messageSent = new Semaphore(0);
-	sendLock = new Lock();
+		messageReceived = new Semaphore(0);
+		messageSent = new Semaphore(0);
+		sendLock = new Lock();
+		portLock = new Lock();
 
-	queues = new SpecialSynchList[NetMessage.portLimit];
-	for (int i=0; i<queues.length; i++)
-	    queues[i] = new SpecialSynchList();
+		queues = new SpecialSynchList[NetMessage.portLimit];
+		for (int i=0; i<queues.length; i++)
+	    	queues[i] = new SpecialSynchList();
 
-	Runnable receiveHandler = new Runnable() {
-	    public void run() { receiveInterrupt(); }
-	};
-	Runnable sendHandler = new Runnable() {
-	    public void run() { sendInterrupt(); }
-	};
-	Machine.networkLink().setInterruptHandlers(receiveHandler,
+		Runnable receiveHandler = new Runnable() {
+	    	public void run() { receiveInterrupt(); }
+		};
+		Runnable sendHandler = new Runnable() {
+	    	public void run() { sendInterrupt(); }
+		};
+		Machine.networkLink().setInterruptHandlers(receiveHandler,
 						   sendHandler);
 
-	KThread t = new KThread(new Runnable() {
-		public void run() { postalDelivery(); }
+		KThread t = new KThread(new Runnable() {
+			public void run() { postalDelivery(); }
 	    });
 
-	t.fork();
+		t.fork();
     }
 
     /**
@@ -113,12 +114,12 @@ public class PostOffice {
 		if (Lib.test(dbgNet))
 	    	System.out.println("sending mail: " + mail);
 
-			sendLock.acquire();
+		sendLock.acquire();
 
-			Machine.networkLink().send(mail.packet);
-			messageSent.P();
+		Machine.networkLink().send(mail.packet);
+		messageSent.P();
 
-			sendLock.release();
+		sendLock.release();
     }
 
     /**
@@ -133,6 +134,7 @@ public class PostOffice {
 
 	public int findAvailablePort() {
 		//go through the the array of synch lists to find a vacant port
+		portLock.acquire();
 		int i = 0;
 		for (SpecialSynchList listObj : queues) {
 			if (listObj.isFree == true) {
@@ -140,7 +142,16 @@ public class PostOffice {
 			}
 			i++;
 		}
+		portLock.release();
 		return i;
+	}
+
+	public void markPortAsUsed(int i) {
+		portLock.acquire();
+		if (!queues[i].isFree)
+			System.out.println("port is not free");
+		queues[i].isFree = False;
+		portLock.release();
 	}
 
 

@@ -17,9 +17,7 @@ public class NetProcess extends UserProcess {
     }
 
     public PostOffice postOffice = new PostOffice();
-    private static final int
-    syscallConnect = 11,
-    syscallAccept = 12;
+        private static final int syscallConnect = 11, syscallAccept = 12;
     
     /**
      * Handle a syscall exception. Called by <tt>handleException()</tt>. The
@@ -61,9 +59,9 @@ public class NetProcess extends UserProcess {
 
         int srcPort = NetKernel.postOffice.findAvailablePort();
                
-       Connection connection = new Connection(localID, srcPort, host, port);
+       Connection connection = new Connection(host, port, localID, srcPort);
         int i;
-        for(i = 0; i < fileTable.length; i ++)
+        for(i = 2; i < fileTable.length; i ++)
         {
             if (fileTable[i] == null) {
             fileTable[i] = connection;
@@ -80,6 +78,10 @@ public class NetProcess extends UserProcess {
             Lib.assertNotReached();
             return -1;
         }
+
+        NetMessage acknowledgement = NetKernel.postOffice.receiveBlock(srcPort);
+        System.out.println("Acknowledge " + acknowledgement);
+
         return i;
     }
 
@@ -103,26 +105,28 @@ public class NetProcess extends UserProcess {
     }
     int dstLink= message.packet.dstLink;
     int srcLink  = message.packet.srcLink;
-    int dstPort = message.dstPort;
+    int dstPort = Machine.networkLink().getLinkAddress();
     int srcPort = message.srcPort;
-    Connection connection = new Connection(srcLink, srcPort, dstLink, dstPort);
+    Connection connection = new Connection(srcLink, srcPort, dstLink, port);
+    NetKernel.postOffice.markPortAsUsed(port);
     int i;
-    for(i = 0; i < fileTable.length; i ++)
+    for(i = 2; i < fileTable.length; i ++)
     {
             if (fileTable[i] == null) {
             fileTable[i] = connection;
             break;
+        }
+       
     }
-        try {
+    try {
             NetMessage acknowledgement = new NetMessage(dstLink, dstPort, srcLink, srcPort,  3, connection.curSeqNum, new byte[0]);
             NetKernel.postOffice.send(acknowledgement);
-        } catch(MalformedPacketException e) {
+    } catch(MalformedPacketException e) {
             System.out.println("malformed packed exception");
             Lib.assertNotReached();
             return -1;
-            }
-
         }
+
         return i;
         
 

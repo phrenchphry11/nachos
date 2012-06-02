@@ -14,16 +14,16 @@ public class NetKernel extends UserKernel {
      * Allocate a new networking kernel.
      */
     public NetKernel() {
-	super();
+		super();
     }
 
     /**
      * Initialize this kernel.
      */
     public void initialize(String[] args) {
-	super.initialize(args);
+		super.initialize(args);
 
-	postOffice = new PostOffice();
+		postOffice = new PostOffice();
     }
 
     /**
@@ -35,6 +35,7 @@ public class NetKernel extends UserKernel {
     public void selfTest() {
 	super.selfTest();
 
+	/*
 	KThread serverThread = new KThread(new Runnable() {
 		public void run() { pingServer(); }
 	    });
@@ -52,6 +53,7 @@ public class NetKernel extends UserKernel {
 	// if we're 0 or 1, ping the opposite
 	if (local <= 1)
 	    ping(1-local);
+	*/
     }
 
     private void ping(int dstLink) {
