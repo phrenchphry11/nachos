@@ -114,15 +114,10 @@ public class PostOffice {
 		if (Lib.test(dbgNet))
 	    	System.out.println("sending mail: " + mail);
 
-	    System.out.println("acquire lock");
 		sendLock.acquire();
-		System.out.println("send");
 		Machine.networkLink().send(mail.packet);
-		System.out.println("line 121");
 		messageSent.P();
-		System.out.println("line 123");
 		sendLock.release();
-		System.out.println("release send lock");
     }
 
     /**
@@ -142,6 +137,7 @@ public class PostOffice {
 		for (SpecialSynchList listObj : queues) {
 			if (listObj.isFree == true) {
 				listObj.isFree = false;
+				portLock.release();
 				return i;
 			}
 			i++;
@@ -154,7 +150,7 @@ public class PostOffice {
 		portLock.acquire();
 		if (!queues[i].isFree)
 			System.out.println("port is not free");
-		queues[i].isFree = false;
+		else queues[i].isFree = false;
 		portLock.release();
 	}
 

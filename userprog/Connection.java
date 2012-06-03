@@ -16,6 +16,7 @@ public class Connection extends OpenFile{
 	public int dstLink;
 	public int dstPort;
 	public int curSeqNum;
+	public int sendSeqNum;
 	
 	public Connection(int dstLink, int dstPort, int srcLink, int srcPort){
 		//params are the source link, source port, destination link, destination port
@@ -25,6 +26,7 @@ public class Connection extends OpenFile{
 		this.dstLink = dstLink;
 		this.dstPort = dstPort;
 		this.curSeqNum = 0;
+		this.sendSeqNum = 0;
 	}
 
 
@@ -43,20 +45,19 @@ public class Connection extends OpenFile{
 
 	}
 
-	public int write(byte[] buffer, int offset, int length) {
-		//writes a packet from a buffer
-		int numBytesWritten = 0;
-		try{
-			NetMessage message = new NetMessage(dstLink, dstPort, srcLink, srcPort, 0, curSeqNum, new byte[length]);
-			for (int i = offset; i < length + offset; i++) {
-				message.contents[i-offset] = buffer[i];
-				numBytesWritten++;
-			}
-			NetKernel.postOffice.send(message);
-			return numBytesWritten;
-		} 
-		catch (MalformedPacketException e) {
-			return -1;
-		}
-	}
+   public int write(byte[] buf, int offset, int length) {
+        int amount = Math.min(offset + length, buf.length);
+        byte[] contents = Arrays.copyOfRange(buf, offset, amount);
+        
+        try {
+            NetMessage message = new NetMessage(dstLink, dstPort, srcLink, srcPort, 0, sendSeqNum + 1, contents);
+            System.out.println("write: " + message);
+            NetKernel.postOffice.send(message);
+            sendSeqNum++;
+            return amount;
+        }
+        catch (MalformedPacketException e) {
+            return -1;
+        }
+    }
 }
